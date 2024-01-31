@@ -1,0 +1,28 @@
+.profile-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.editable-field {
+  margin-bottom: 15px;
+}
+
+.edit-button,
+.save-button {
+  padding: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.edit-button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.save-button {
+  background-color: #2196f3;
+  color: white;
+}
