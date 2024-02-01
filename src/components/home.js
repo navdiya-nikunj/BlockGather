@@ -1,9 +1,53 @@
-// Import React and necessary dependencies
-import React from 'react';
-import '../css/home.css';
+import React, { useEffect, useState } from "react";
+import Navbar from "./navbar";
+import Web3 from "web3";
+import "../css/home.css";
 
-// Home component
-const Home = () => {
+export default function Home() {
+  const [web3, setWeb3] = useState(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [showProfileButton, setShowProfileButton] = useState(false);
+  const [walletAddress, setWalletAddress] = useState("");
+
+  useEffect(() => {
+    const initWeb3 = async () => {
+      // Check if Web3 is injected by the browser
+      if (window.ethereum) {
+        const newWeb3 = new Web3(window.ethereum);
+        try {
+          // Request account access if needed
+          await window.ethereum.enable();
+          setWeb3(newWeb3);
+          setIsConnected(true);
+        } catch (error) {
+          console.error('User denied account access');
+        }
+      } else if (window.web3) {
+        // Legacy dApp browsers
+        setWeb3(new Web3(window.web3.currentProvider));
+        setIsConnected(true);
+      } else {
+        // Non-dApp browser
+        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+      }
+      
+    };
+
+    initWeb3();
+  }, []);
+  const connectWallet = async () => {
+    try {
+      // Request account access if needed
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
+      setWeb3(new Web3(window.ethereum));
+      setWalletAddress(web3.eth.accounts[0]);
+      setIsConnected(true);
+    } catch (error) {
+      console.error('Error connecting to wallet:', error);
+      setIsConnected(false);
+    }
+  };
+
   return (
     <div className="home-container">
       {/* Header section */}
@@ -12,8 +56,10 @@ const Home = () => {
       </header>
 
       {/* Login button */}
-      <div className="login-button-container">
-        <button className="login-button">Login</button>
+      <div className="login-button-container">{
+        !isConnected && 
+        <button className="login-button" onClick={connectWallet}>Login</button>
+      }
       </div>
 
       {/* About section */}
@@ -27,7 +73,4 @@ const Home = () => {
       </section>
     </div>
   );
-};
-
-// Export the Home component
-export default Home;
+}
